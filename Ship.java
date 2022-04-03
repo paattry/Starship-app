@@ -18,16 +18,6 @@ public class Ship {
         this.movement = new Point2D(0, 0);
     }
 
-    public void turnRight()
-    {
-        this.ship.setRotate(this.ship.getRotate() + 5);
-    }
-
-    public void turnLeft()
-    {
-        this.ship.setRotate(this.ship.getRotate() - 5);
-    }
-
     public void accelerate(KeyCode code)
     {
         if(code == KeyCode.LEFT)
