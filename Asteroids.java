@@ -27,7 +27,6 @@ public class Asteroids extends Application {
     Label someAction, player1, player2, player3, score1, score2, score3, rankingTitle;
     VBox ranking;
     HBox row1, row2, row3;
-    //Polygon ship;
 
     @Override
     public void start(Stage stage) {
@@ -147,15 +146,6 @@ public class Asteroids extends Application {
         gamePane = new Pane();
         gamePane.getChildren().add(someAction);
         gameScene = new Scene(gamePane, 1000, 800);
-
-        /*ship = new Polygon(-10, -10, 20, 0, -10, 10);
-        ship.setTranslateX(300);
-        ship.setTranslateY(200);
-        ship.setRotate(270);
-
-         */
-
-        //gamePane.getChildren().add(ship);
     }
 
     public void setGUIFunctionality(Stage stage)
