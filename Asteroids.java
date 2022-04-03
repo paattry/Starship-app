@@ -178,18 +178,6 @@ public class Asteroids extends Application {
             @Override
             public void handle(long l)
             {
-                /*if(keyPressed.getOrDefault(KeyCode.LEFT, Boolean.FALSE))
-                    ship.setTranslateX(ship.getTranslateX() - 1);
-
-                if(keyPressed.getOrDefault(KeyCode.RIGHT, Boolean.FALSE))
-                    ship.setTranslateX(ship.getTranslateX() + 1);
-
-                if(keyPressed.getOrDefault(KeyCode.UP, Boolean.FALSE))
-                    ship.setTranslateY(ship.getTranslateY() - 1);
-
-                if(keyPressed.getOrDefault(KeyCode.DOWN, Boolean.FALSE))
-                    ship.setTranslateY(ship.getTranslateY() + 1);
-                 */
 
                 if(keyPressed.getOrDefault(KeyCode.LEFT, false))
                     ship.accelerate(KeyCode.LEFT);
