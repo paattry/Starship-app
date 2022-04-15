@@ -30,14 +30,15 @@ public class Asteroids extends Application {
     VBox ranking;
     HBox row1, row2, row3;
     List<Meteor> meteorsList;
+    int counter = 0;
 
     @Override
     public void start(Stage stage) {
         stage.setTitle("Starship game");
 
-        setStartingGUI();
-        setGameGUI();
-        setGUIFunctionality(stage);
+        setStartingGUI(); // ustawia startowe gui
+        setGameGUI(); // tworzy panel gry
+        setGUIFunctionality(stage); // odpala gre przez wcisniecia start
 
         stage.setScene(GUIScene);
         stage.show();
@@ -154,16 +155,16 @@ public class Asteroids extends Application {
     {
         start.setOnAction(e ->
         {
-            meteorsList = new ArrayList<>();
+            meteorsList = new ArrayList<>(); // lista asteroid
             stage.setScene(gameScene);
 
-            for(int i = 0; i < 12; i++)
+            for(int i = 0; i < 10; i++) // pokazowa petla
                 meteorsList.add(new Meteor(new RandomMeteor().generateMeteor(),
                         new Random().nextInt(1001), new Random().nextInt(801),
                         new Random().nextDouble() - 0.5, new Random().nextDouble() - 0.5,
                         new Random().nextDouble()));
 
-            shipMovement();
+            shipMovement(); // funkcja sterujaca gra
         });
     }
 
@@ -180,12 +181,12 @@ public class Asteroids extends Application {
         for(Meteor meteors : meteorsList)
             gamePane.getChildren().add(meteors.getObject());
 
-        new AnimationTimer()
+        new AnimationTimer() // klasa do robienia animacji, dziala w 60fps
         {
             @Override
             public void handle(long l)
             {
-
+                // statek i jego funkcjonalnosci
                 if(keyPressed.getOrDefault(KeyCode.LEFT, false))
                     ship.shipAccelerate(KeyCode.LEFT);
 
@@ -197,12 +198,26 @@ public class Asteroids extends Application {
 
                 if(keyPressed.getOrDefault(KeyCode.DOWN, false))
                     ship.shipAccelerate(KeyCode.DOWN);
-
-                for(Meteor meteors : meteorsList)
-                    meteors.asteroidAccelerate(meteors.getVx(), meteors.getVy(), meteors.getRotate());
                 
                 ship.move();
+                
+                /*meteorsList.forEach(asteroid -> { // sprawdza kolizje statku z asteroida
+                    if (ship.collide(asteroid)) {
+                        stop();
+                    }
+                });*/
 
+                // zatrzymuje gre gdy statek walnie w bande
+                if(ship.getObject().getTranslateY() >= 760) stop();
+                else if(ship.getObject().getTranslateX() <= 10) stop();
+                else if(ship.getObject().getTranslateX() >= 980) stop();
+                else if(ship.getObject().getTranslateY() <= 20) stop();
+                
+                // asteroidy i ich fukcjonalnosci
+                for(Meteor meteors : meteorsList)
+                    meteors.asteroidAccelerate(meteors.getVx(), meteors.getVy(), meteors.getRotate());
+
+                // prymitywne sterowanie odbiciem asteroid
                 for(int i = 0; i < meteorsList.size() -1; i++)
                     for(int j = 0; j < meteorsList.size() - i - 1; j++)
                         if(meteorsList.get(i).collide(meteorsList.get(i + j + 1)))
@@ -214,6 +229,14 @@ public class Asteroids extends Application {
                             meteorsList.get(i).setRotate(-meteorsList.get(i).getRotate());
                             meteorsList.get(i + j + 1).setRotate(-meteorsList.get(i + j + 1).getRotate());
                         }
+                
+                // stress test :)
+                counter++;
+                if(counter%60 == 0)
+                {
+                    System.out.println(counter/60);
+                    //meteorsWaterfall();
+                }
 
             }
         }.start();
@@ -222,6 +245,25 @@ public class Asteroids extends Application {
     public double averageSpeed(double speed1, double speed2)
     {
         return (speed1 + speed2)/2;
+    }
+    
+    public void meteorsWaterfall() // fukcja generujaca asteroidy u gory ekranu, tak aby sie nie zderzaly
+    {
+        boolean collision = false;
+        do{
+            Meteor meteor = new Meteor(new RandomMeteor().generateMeteor(),
+                    new Random().nextInt(1001), new Random().nextInt(101),
+                    new Random().nextDouble()/10, new Random().nextDouble()/2 + 0.5,
+                    new Random().nextDouble());
+            for(Meteor meteor1 : meteorsList)
+                if(meteor1.collide(meteor))
+                    collision = true;
+            if(!collision)
+            {
+                meteorsList.add(meteor);
+                gamePane.getChildren().add(meteor.getObject());
+            }
+        }while (collision);
     }
 
 }
