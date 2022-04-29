@@ -29,6 +29,10 @@ public class Asteroids extends Application {
     List<Laser> laserList;
     int counter = 0;
     double level = 1;
+    boolean spacePressed = true;
+    boolean shot = false;
+    int[] meteorsShot = new int[60];
+    int[] bulletsUsed = new int[50];
 
     @Override
     public void start(Stage stage) {
@@ -178,6 +182,8 @@ public class Asteroids extends Application {
 
         gameScene.setOnKeyPressed(event -> keyPressed.put(event.getCode(), Boolean.TRUE));
         gameScene.setOnKeyReleased(event -> keyPressed.put(event.getCode(), Boolean.FALSE));
+        
+        keyPressed.put(KeyCode.SPACE, Boolean.FALSE);
 
         Ship ship = new Ship(500, 500);
         gamePane.getChildren().add(ship.getObject());
@@ -202,10 +208,17 @@ public class Asteroids extends Application {
 
                 if(keyPressed.getOrDefault(KeyCode.SPACE, false))
                 {
-                    Laser laser = new Laser(ship.getObject().getTranslateX(), ship.getObject().getTranslateY());
-                    laserList.add(laser);
-                    gamePane.getChildren().add(laser.getObject());
+                    if(spacePressed)
+                    {
+                        Laser laser = new Laser(ship.getObject().getTranslateX(), ship.getObject().getTranslateY());
+                        laserList.add(laser);
+                        gamePane.getChildren().add(laser.getObject());
+                    }
+                    spacePressed = false;
                 }
+                
+                if(!keyPressed.get(KeyCode.SPACE))
+                    spacePressed = true;
                 
                 ship.move(); // rusza statkiem
 
@@ -243,8 +256,11 @@ public class Asteroids extends Application {
                             System.out.println("Game end");
                             stop();
                         }
-                        double x = 1 +(level-1)*2;
-                        System.out.println("Level " + x);
+                        else
+                        {
+                            double x = 1 +(level-1)*2;
+                            System.out.println("Level " + x);
+                        }
                     }
 
                     // waruenk generujacy asteroidy, tak aby sie nie zderzaly
@@ -316,10 +332,9 @@ public class Asteroids extends Application {
                         for(int j = 0; j < meteorList.size(); j++)
                             if(laserList.get(i).collide(meteorList.get(j)))
                             {
-                                gamePane.getChildren().remove(meteorList.get(j).getObject());
-                                meteorList.remove(j);
-                                gamePane.getChildren().remove(laserList.get(i).getObject());
-                                laserList.remove(i);
+                                shot = true;
+                                meteorsShot[i] = 1;
+                                bulletsUsed[j] = 1;
                             }
 
                         // usuwa pociski po opuszczeniu GamePane
@@ -327,6 +342,28 @@ public class Asteroids extends Application {
                         {
                             gamePane.getChildren().remove(laserList.get(i).getObject());
                             laserList.remove(i);
+                        }
+                    }
+
+                    if(shot)
+                    {
+                        for (int i=0; i < laserList.size(); i++) {
+                            if (Integer.toString(meteorsShot[i]).equals("1")) {
+                                for(int j = 0; j < meteorList.size(); j++)
+                                {
+                                    if(Integer.toString(bulletsUsed[j]).equals("1"))
+                                    {
+                                        gamePane.getChildren().remove(meteorList.get(j).getObject());
+                                        meteorList.remove(j);
+                                        gamePane.getChildren().remove(laserList.get(i).getObject());
+                                        laserList.remove(i);
+                                        meteorsShot[i] = 0;
+                                        bulletsUsed[j] = 0;
+                                        shot = false;
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
                 });
